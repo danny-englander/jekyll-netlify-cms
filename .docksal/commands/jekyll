@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Execute the whole script inside the cli container,
+# This allows us to not have to prefix everything with "fin exec"
+#: exec_target=cli
+
+## alias for jekyll
+##
+## Script usage:
+## fin jekyll
+
+rm -R _site
+jekyll serve --force_polling --incremental

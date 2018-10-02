@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Execute the whole script inside the cli container,
+# This allows us to not have to prefix everything with "fin exec"
+#: exec_target=cli
+
+## alias for gulp
+##
+## Script usage:
+## fin gulp
+
+source ~/.bashrc
+source ~/.nvm/nvm.sh
+nvm use
+gulp

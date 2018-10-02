@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Execute the whole script inside cli container
+#: exec_target=cli
+
+# Place this in your project at /.docksal/commands and call this file rvm, the name should match the command.
+
+# Run this script as fin rvm.
+
+# Install RVM and dependancies, activate and source it, choose the version.
+
+# These two lines are needed to have a valid RVM install
+curl -#LO https://rvm.io/mpapis.asc
+gpg --import mpapis.asc
+
+# Install RVM.
+sudo curl -fsSL "https://get.rvm.io" | bash -s stable --auto-dotfiles --autolibs=enable --ruby
+
+# Install vim in case we need it.
+sudo apt install vim
+
+# Write rvm source stuff to .bashrc so the system knows about it.
+echo '[[ -s "~/.rvm/scripts/rvm" ]] && source "~/.rvm/scripts/rvm"' >> ~/.bashrc
+
+# Source rvm for good measure.
+source ~/.rvm/scripts/rvm
+
+# Now source .bashrc.
+source ~/.bashrc
+
+# Choose the ruby version we installed.
+rvm use ruby-2.4.3
+
+# Now make sure we are using that version.
+ruby -v
+
+#sudo gem install rubygems-bundler
+sudo gem install bundler
+
+sudo gem regenerate_binstubs
+
+source ~/.bashrc
+source ~/.bash_profile

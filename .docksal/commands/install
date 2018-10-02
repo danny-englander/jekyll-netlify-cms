@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Execute the whole script inside cli container
+#: exec_target=cli
+
+## Install RVM and target Ruby version
+##
+## Usage: 
+## fin install
+
+# Check for and install Node Version Manager
+if ! (which nvm); then
+  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh --no-use | bash 
+  export NVM_DIR="$HOME/.nvm"
+  # Load NVM.
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  # Load NVM  bash_completion.
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  # Source / reload profiles.
+  source ~/.bashrc
+  source ~/.nvm/nvm.sh
+fi
+
+  # Source / reload profiles for good measure.
+  echo 'Reloading Profiles'
+  source ~/.bashrc
+  source ~/.nvm/nvm.sh
+
+# Check for NVM Node 8.12.0, install if it does not exist.
+if [[ $(node -v) != "v8.12.0" ]]; then
+  nvm install 8.12.0
+fi
+
+# Check which node versions are installed and show defaults.
+echo 'Here are the current node versions installed'
+nvm ls
+
+# set the global version of node being used.
+echo 'Set the default version of node and "use it"'
+nvm alias default 8.12.0
+nvm use
+
+# Install Yarn on Debian.
+if ! (which yarn); then
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+fi 
+
+# Check for and remove the 'node_modules' folder for good measure before we install.
+if [ -d "$node_modules" ]; then
+echo "removing node_modules folder"
+rm -R node_modules
+fi
+
+yarn install
+echo "Yarn is installing node modules"
+
+yarn global add gulp-cli
+echo "Yarn is installing gulp CLI"
+
+## Check to see if RVM is installed.
+if ! (which rvm); then
+ # RVM security validation key.
+  curl -#LO https://rvm.io/mpapis.asc
+  gpg --import mpapis.asc
+
+  sudo curl -fsSL "https://get.rvm.io" | bash -s stable --auto-dotfiles --autolibs=enable
+
+  # Make RVM to be bash function in future shells
+  echo 'source /home/docker/.rvm/scripts/rvm' >> ~/.bashrc
+fi
+
+# Install required Ruby version
+if [[ "rvm current" != "ruby-2.4.3" ]]; then
+  echo "Installing Ruby $1..."
+  source /home/docker/.rvm/scripts/rvm
+  rvm install "ruby-2.4.3"
+fi
+
+# Set the default ruby version to be used.
+rvm --default use 2.4.3
+
+# Check for and install bundler.
+if ! (which bundle); then
+  gem install bundler
+fi
+
+echo "Here are the Ruby and bundler versions being used."
+ruby -v
+bundle -v
+
+# Install Gems from gemfile.
+bundle install
+
+# Install vim.
+if ! (which vim); then
+  sudo apt --assume-yes install vim
+fi
